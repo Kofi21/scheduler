@@ -1,5 +1,3 @@
-import Appointment from "components/Appointment";
-
 export function getAppointmentsForDay(state, day) {
   const filteredDay = state.days.filter((stateDay) => stateDay.name === day);
   const appointmentArray = [];
@@ -11,4 +9,12 @@ export function getAppointmentsForDay(state, day) {
   } else {
     return [];
   }
+}
+
+export function getInterview(state, interview) {
+  if (!interview) return null;
+  const id = interview.interviewer;
+  const student = interview.student;
+  const interviewer = state.interviewers[id];
+  return { student, interviewer };
 }
