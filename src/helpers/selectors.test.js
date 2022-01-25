@@ -1,4 +1,4 @@
-import { getAppointmentsForDay } from "helpers/selectors";
+import { getAppointmentsForDay, getInterview } from "helpers/selectors";
 
 const state = {
   days: [
@@ -28,6 +28,13 @@ const state = {
       interview: { student: "Chad Takahashi", interviewer: 2 },
     },
   },
+  interviewers: [
+    { id: 1, name: "Sylvia Palmer", avatar: "https://i.imgur.com/LpaY82x.png" },
+    { id: 2, name: "Tori Malcolm", avatar: "https://i.imgur.com/Nmx0Qxo.png" },
+    { id: 3, name: "Mildred Nazir", avatar: "https://i.imgur.com/T2WwVfS.png" },
+    { id: 4, name: "Cohana Roy", avatar: "https://i.imgur.com/FK8V841.jpg" },
+    { id: 5, name: "Sven Jones", avatar: "https://i.imgur.com/twYrpay.jpg" },
+  ],
 };
 
 test("getAppointmentsForDay returns an array", () => {
@@ -54,4 +61,23 @@ test("getAppointmentsForDay returns an empty array when the days data is empty",
 test("getAppointmentsForDay returns an empty array when the day is not found", () => {
   const result = getAppointmentsForDay(state, "Wednesday");
   expect(result.length).toEqual(0);
+});
+
+test("getInterview returns an object with the interviewer data", () => {
+  const result = getInterview(state, state.appointments["3"].interview);
+  expect(result).toEqual(
+    expect.objectContaining({
+      student: expect.any(String),
+      interviewer: expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String),
+        avatar: expect.any(String),
+      }),
+    })
+  );
+});
+
+test("getInterview returns null if no interview is booked", () => {
+  const result = getInterview(state, state.appointments["2"].interview);
+  expect(result).toBeNull();
 });

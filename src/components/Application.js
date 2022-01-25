@@ -27,6 +27,8 @@ export default function Application(props) {
     });
   }, []);
 
+  console.log(state.interviewers);
+
   const setDay = (day) => setState({ ...state, day });
 
   const dailyAppointments = getAppointmentsForDay(state, state.day);
