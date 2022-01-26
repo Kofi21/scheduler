@@ -3,6 +3,8 @@ import "components/Appointment/styles.scss";
 import Header from "./Header";
 import Show from "./Show";
 import Empty from "./Empty";
+import useVisualMode from "hooks/useVisualMode";
+import Form from "./Form";
 
 // const appointments = [
 //   {
@@ -43,14 +45,44 @@ import Empty from "./Empty";
 //   },
 // ];
 
+const EMPTY = "EMPTY";
+const SHOW = "SHOW";
+const CREATE = "CREATE";
+
 export default function Appointment(props) {
   const { time, interview } = props;
+  const { mode, transition, back } = useVisualMode(
+    props.interview ? SHOW : EMPTY
+  );
   // const appointmentText = !time ? "No Appointments" : `Appointment at ${time}`;
+
   return (
     <Fragment>
       <Header time={time} />
+      {mode === EMPTY && (
+        <Empty
+          onAdd={() => {
+            transition(CREATE);
+          }}
+        />
+      )}
+
       <article className="appointment">
-        {interview ? <Show interview={interview} time={time} /> : <Empty />}
+        {mode === SHOW && (
+          <Show
+            student={interview.student}
+            interviewer={interview.interviewer}
+          />
+        )}
+      </article>
+      <article>
+        {mode === CREATE && (
+          <Form
+            interviewers={[]}
+            onClick={() => console.log("clicked")}
+            onCancel={() => back()}
+          />
+        )}
       </article>
     </Fragment>
   );

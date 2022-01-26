@@ -27,14 +27,20 @@ export default function Application(props) {
     });
   }, []);
 
-  console.log(state.interviewers);
+  // console.log(state.interviewers);
 
   const setDay = (day) => setState({ ...state, day });
 
   const dailyAppointments = getAppointmentsForDay(state, state.day);
+  console.log("dailt appointment", dailyAppointments);
+  const filteredDailyAppointments = dailyAppointments.filter(
+    (appointment) => appointment.interview
+  );
 
-  const parsedAppointment = dailyAppointments.map((appointment) => {
+  const parsedAppointment = filteredDailyAppointments.map((appointment) => {
     const interview = getInterview(state, appointment.interview);
+    console.log("interview object", interview);
+
     return (
       <Appointment
         key={appointment.id}
@@ -44,6 +50,7 @@ export default function Application(props) {
       />
     );
   });
+  console.log("parsed appointments: ", parsedAppointment);
   return (
     <main className="layout">
       <section className="sidebar">
