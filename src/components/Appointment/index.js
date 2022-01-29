@@ -1,56 +1,56 @@
-import React, { Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import "components/Appointment/styles.scss";
 import Header from "./Header";
 import Show from "./Show";
 import Empty from "./Empty";
+import Status from "./Status";
+import Error from "./Error";
+import Confirm from "./Confirm";
 import useVisualMode from "hooks/useVisualMode";
 import Form from "./Form";
-
-// const appointments = [
-//   {
-//     id: 1,
-//     time: "12pm",
-//   },
-//   {
-//     id: 2,
-//     time: "1pm",
-//     interview: {
-//       student: "Lydia Miller-Jones",
-//       interviewer: {
-//         id: 3,
-//         name: "Sylvia Palmer",
-//         avatar: "https://i.imgur.com/LpaY82x.png",
-//       },
-//     },
-//   },
-//   {
-//     id: 3,
-//     time: "2pm",
-//   },
-//   {
-//     id: 4,
-//     time: "3pm",
-//     interview: {
-//       student: "Archie Andrews",
-//       interviewer: {
-//         id: 4,
-//         name: "Cohana Roy",
-//         avatar: "https://i.imgur.com/FK8V841.jpg",
-//       },
-//     },
-//   },
-//   {
-//     id: 5,
-//     time: "4pm",
-//   },
-// ];
 
 const EMPTY = "EMPTY";
 const SHOW = "SHOW";
 const CREATE = "CREATE";
+const SAVING = "SAVING";
+const DELETING = "DELETING";
+const CONFIRM = "CONFIRM";
+const EDIT = "EDIT";
+const ERROR_SAVE = "ERROR_SAVE";
+const ERROR_DELETE = "ERROR_DELETE";
 
 export default function Appointment(props) {
-  const { time, interview } = props;
+  function save(name, interviewer) {
+    const interview = {
+      student: name,
+      interviewer,
+    };
+    transition(SAVING, true);
+    props
+      .bookInterview(props.id, interview)
+      .then(() => {
+        transition(SHOW);
+      })
+      .catch((error) => transition(ERROR_SAVE, true));
+  }
+
+  function confirm() {
+    transition(CONFIRM);
+  }
+
+  function destroy() {
+    transition(DELETING, true);
+    props
+      .cancelInterview(props.id)
+      .then(() => {
+        transition(EMPTY);
+      })
+      .catch((error) => transition(ERROR_DELETE, true));
+  }
+  function edit() {
+    transition(EDIT);
+  }
+
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
   );
@@ -58,29 +58,54 @@ export default function Appointment(props) {
 
   return (
     <Fragment>
-      <Header time={time} />
-      {mode === EMPTY && (
-        <Empty
-          onAdd={() => {
-            transition(CREATE);
-          }}
-        />
-      )}
-
-      <article className="appointment">
+      <article className="appointment" data-testid="appointments">
+        <Header time={props.time} />
+        {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
+        {mode === SAVING && <Status message="Saving" />}
+        {mode === DELETING && <Status message="DELETING" />}
+        {mode === CONFIRM && (
+          <Confirm
+            message="Delete the appointment?"
+            onCancel={() => back()}
+            onConfirm={() => destroy()}
+          />
+        )}
         {mode === SHOW && (
           <Show
-            student={interview.student}
-            interviewer={interview.interviewer}
+            student={props.interview.student}
+            interviewer={props.interview.interviewer}
+            onDelete={confirm}
+            onEdit={edit}
           />
         )}
       </article>
       <article>
         {mode === CREATE && (
           <Form
-            interviewers={[]}
-            onClick={() => console.log("clicked")}
+            interviewers={props.interviewers}
             onCancel={() => back()}
+            onSave={save}
+          />
+        )}
+        {mode === EDIT && (
+          <Form
+            interviewers={props.interviewers}
+            student={props.interview.student}
+            interviewer={props.interview.interviewer.id}
+            onCancel={() => back()}
+            onSave={save}
+          />
+        )}
+        {mode === ERROR_SAVE && (
+          <Error
+            message="Could not delete appointment"
+            onClose={() => back()}
+          />
+        )}
+        {mode === ERROR_DELETE && (
+          <Error
+            message="Could not delete appointment"
+            onClose={() => back()}
           />
         )}
       </article>
