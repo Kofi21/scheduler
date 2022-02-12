@@ -12,7 +12,6 @@ export default function DayList(props) {
       setDay={props.setDay}
     />
   ));
-  console.log(props.value);
 
   return <ul>{parsedDays}</ul>;
 }

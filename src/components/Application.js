@@ -14,13 +14,8 @@ export default function Application(props) {
     useApplicationData();
 
   const interviewers = getInterviewersForDay(state, state.day);
-  console.log(interviewers, state);
 
   const dailyAppointments = getAppointmentsForDay(state, state.day);
-  // console.log("daily appointment", dailyAppointments);
-  // const filteredDailyAppointments = dailyAppointments.filter(
-  //   (appointment) => appointment.interview
-  // );
 
   const parsedAppointment = dailyAppointments.map((appointment) => {
     if (appointment.interview) {
@@ -46,10 +41,7 @@ export default function Application(props) {
         />
       );
     }
-
-    // console.log("interview object", interview);
   });
-  // console.log("parsed appointments: ", parsedAppointment);
   return (
     <main className="layout" data-testid="appointment">
       <section className="sidebar">
