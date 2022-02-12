@@ -14,9 +14,10 @@ export default function Application(props) {
     useApplicationData();
 
   const interviewers = getInterviewersForDay(state, state.day);
+  console.log(interviewers, state);
 
   const dailyAppointments = getAppointmentsForDay(state, state.day);
-  console.log("daily appointment", dailyAppointments);
+  // console.log("daily appointment", dailyAppointments);
   // const filteredDailyAppointments = dailyAppointments.filter(
   //   (appointment) => appointment.interview
   // );
@@ -38,6 +39,7 @@ export default function Application(props) {
       return (
         <Appointment
           key={appointment.id}
+          id={appointment.id}
           time={appointment.time}
           interviewers={interviewers}
           bookInterview={bookInterview}
@@ -47,7 +49,7 @@ export default function Application(props) {
 
     // console.log("interview object", interview);
   });
-  console.log("parsed appointments: ", parsedAppointment);
+  // console.log("parsed appointments: ", parsedAppointment);
   return (
     <main className="layout" data-testid="appointment">
       <section className="sidebar">
