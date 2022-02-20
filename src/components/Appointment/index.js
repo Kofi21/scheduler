@@ -25,7 +25,7 @@ export default function Appointment(props) {
       student: name,
       interviewer,
     };
-    transition(SAVING, true);
+    transition(SAVING);
     props
       .bookInterview(props.id, interview)
       .then(() => {
@@ -60,7 +60,9 @@ export default function Appointment(props) {
     <Fragment>
       <article className="appointment" data-testid="appointments">
         <Header time={props.time} />
-        {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
+        {mode === EMPTY && props.time !== "5pm" && (
+          <Empty onAdd={() => transition(CREATE)} />
+        )}
         {mode === SAVING && <Status message="Saving" />}
         {mode === DELETING && <Status message="DELETING" />}
         {mode === CONFIRM && (
@@ -97,10 +99,7 @@ export default function Appointment(props) {
           />
         )}
         {mode === ERROR_SAVE && (
-          <Error
-            message="Could not delete appointment"
-            onClose={() => back()}
-          />
+          <Error message="Could not save appointment" onClose={() => back()} />
         )}
         {mode === ERROR_DELETE && (
           <Error

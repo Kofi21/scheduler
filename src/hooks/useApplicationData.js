@@ -54,29 +54,31 @@ export default function useApplicationData() {
   };
 
   const cancelInterview = (id) => {
-    const appointment = {
-      ...state.appointments[id],
-      interview: null,
-    };
-    const appointments = {
-      ...state.appointments,
-      [id]: appointment,
-    };
-    const days = state.days.map((day) => {
-      if (state.day === day.name) {
-        day.spots = spotsRemaining(state.day, state.days, appointments);
-        return day;
-      } else {
-        return day;
-      }
-    });
-    return axios.delete(`api/appointments/${id}`, appointments[id]).then(() => {
-      spotsRemaining(state.days, days, appointments);
-      setState({
-        ...state,
-        appointments,
+    return axios
+      .delete(`api/appointments/${id}`, state.appointments[id])
+      .then(() => {
+        const appointment = {
+          ...state.appointments[id],
+          interview: null,
+        };
+        const appointments = {
+          ...state.appointments,
+          [id]: appointment,
+        };
+        const days = state.days.map((day) => {
+          if (state.day === day.name) {
+            day.spots = spotsRemaining(state.day, state.days, appointments);
+            return day;
+          } else {
+            return day;
+          }
+        });
+        spotsRemaining(state.days, days, appointments);
+        setState({
+          ...state,
+          appointments,
+        });
       });
-    });
   };
   useEffect(() => {
     Promise.all([
